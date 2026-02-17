@@ -88,7 +88,9 @@ button{
     justify-content: space-between;
     width: 160px;
 }
-
+.fa-solid {
+    color: #999999;
+}
 .tweet-detail{
     display: flex;
     gap: 4px;
