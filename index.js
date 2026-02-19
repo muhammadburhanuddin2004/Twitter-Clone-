@@ -1,12 +1,7 @@
 import { tweetsData } from "./data.js";
+import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 
 
-const tweetInput = document.getElementById('tweet-input')
-const inputBtn = document.getElementById('tweet-btn')
-
-inputBtn.addEventListener('click', function () {
-    console.log(tweetInput.value)
-})
 
 document.addEventListener("click", function (e) {
     if (e.target.dataset.like) {
@@ -15,7 +10,15 @@ document.addEventListener("click", function (e) {
     else if (e.target.dataset.retweet) {
         handleRetweetClick(e.target.dataset.retweet)
     }
+    else if (e.target.dataset.reply) {
+        handleReplyClick(e.target.dataset.reply)
+    }
+
+    else if (e.target.id === 'tweet-btn') {
+        handleTweetBtnClick()
+    }
 })
+
 function handleRetweetClick(tweetId) {
     const targetTweetObj = tweetsData.filter(function (tweet) {
         return tweet.uuid === tweetId
@@ -29,6 +32,7 @@ function handleRetweetClick(tweetId) {
     targetTweetObj.isRetweeted = !targetTweetObj.isRetweeted
     render()
 }
+
 function handleLikeClick(tweetId) {
     const targetTweetObj = tweetsData.filter(function (tweet) {
         return tweet.uuid === tweetId
@@ -42,19 +46,65 @@ function handleLikeClick(tweetId) {
     targetTweetObj.isLiked = !targetTweetObj.isLiked
 
     render()
-    // let targetTweetObj = {}
-    // for (let tweet of tweetsData) {
-    //     if (tweet.uuid == tweetId) {
-    //         targetTweetObj = tweet
-    //     }
-    // }
-    // targetTweetObj.likes++
-    // console.log(targetTweetObj.likes)
+
 }
+
+function handleReplyClick(replyId) {
+
+    document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
+}
+
+function handleTweetBtnClick() {
+    const tweetInput = document.getElementById('tweet-input')
+    if (tweetInput.value) {
+        tweetsData.unshift({
+            handle: `@Scrim`,
+            profilePic: `images/scrimbalogo.png`,
+            likes: 0,
+            retweets: 0,
+            tweetText: tweetInput.value,
+            replies: [],
+            isLiked: false,
+            isRetweeted: false,
+            uuid: uuidv4()
+        })
+
+    }
+    render()
+    tweetInput.value = ''
+}
+
 function getFeedHtml() {
     let FeedHtml = ''
 
     tweetsData.forEach(function (tweet) {
+        let likeIconClass = ''
+
+        if (tweet.isLiked) {
+            likeIconClass = 'liked'
+        }
+
+        let retweetIconClass = ''
+
+        if (tweet.isRetweeted) {
+            retweetIconClass = 'retweeted'
+        }
+        let repliesHtml = ''
+
+        if (tweet.replies.length > 0) {
+            for (let reply of tweet.replies) {
+                repliesHtml += `
+                <div class="tweet-reply">
+                    <div class="tweet-inner">
+                        <img src="${reply.profilePic}" class="profile-pic">
+                            <div>
+                                <p class="handle">${reply.handle}</p>
+                                <p class="tweet-text">${reply.tweetText}</p>
+                            </div>
+                    </div>
+                </div>`
+            }
+        }
         FeedHtml += `
         <div class="tweet">
             <div class="tweet-inner">
@@ -64,20 +114,26 @@ function getFeedHtml() {
                         <p class="tweet-text">${tweet.tweetText}</p>
                         <div class="tweet-details">
                             <span class="tweet-detail">
-                                <i class="fa-regular fa-comment-dots" data-reply="${tweet.uuid}"></i>
+                                <i class="fa-regular fa-comment-dots"
+                                data-reply="${tweet.uuid}"></i>
                                 ${tweet.replies.length}
                             </span>
                             <span class="tweet-detail">
-                                <i class="fa-solid fa-heart" data-like="${tweet.uuid}"></i>
+                                <i class="fa-solid fa-heart ${likeIconClass}"
+                                data-like="${tweet.uuid}"></i>
                                 ${tweet.likes}
                             </span>
                             <span class="tweet-detail">
-                                <i class="fa-solid fa-retweet" data-retweet="${tweet.uuid}"></i>
+                                <i class="fa-solid fa-retweet ${retweetIconClass}"
+                                data-retweet="${tweet.uuid}"></i>
                                 ${tweet.retweets}
                             </span>
                         </div>
                     </div>
             </div>
+                <div class="hidden" id="replies-${tweet.uuid}">
+                    ${repliesHtml}
+                </div>
         </div>`
     })
     return FeedHtml
