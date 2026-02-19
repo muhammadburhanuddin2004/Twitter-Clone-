@@ -105,6 +105,31 @@ button {
     padding: 20px 0 0 0px;
     margin: 10px 0 10px 40px;
     width: 80%;
+    display: flex;
+    gap: 10px;
+}
+
+.tweet-reply textarea {
+    border: none;
+    padding: 5px 10px;
+    /* margin: 0 0 20px 0; */
+    height: 50px;
+    width: 100%;
+    font-size: 13px;
+    line-height: 30px;
+    resize: none;
+}
+
+.tweet-reply button {
+    background-color: #1DA1F2;
+    border: none;
+    color: white;
+    padding: 10px 19px;
+    border-radius: 20px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .handle {
@@ -121,6 +146,13 @@ button {
 }
 
 /* images */
+.profile-pic-reply {
+    border: 1px solid lightgray;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+
+}
 
 .profile-pic {
     border: 1px solid lightgray;

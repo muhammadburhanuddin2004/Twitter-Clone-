@@ -17,7 +17,46 @@ document.addEventListener("click", function (e) {
     else if (e.target.id === 'tweet-btn') {
         handleTweetBtnClick()
     }
+    else if (e.target.dataset.replybtn) {
+        handleReplyBtnClick(e.target.dataset.replybtn)
+    }
 })
+
+function handleReplyBtnClick(tweetId) {
+    // Target the specific input using the ID we just created
+    const replyInput = document.getElementById(`reply-input-${tweetId}`)
+
+    if (replyInput.value) {
+        const targetTweetObj = tweetsData.filter(function (tweet) {
+            return tweet.uuid === tweetId
+        })[0]
+
+        targetTweetObj.replies.unshift({
+            handle: `@Scrimba ✅`,
+            profilePic: `images/scrimbalogo.png`,
+            tweetText: replyInput.value
+        })
+
+        render()
+        // No need to set replyInput.value to '' here
+        // because render() will wipe and recreate the DOM anyway
+    }
+}
+
+// function handleReplyBtnClick(tweetId) {
+//     let reply = document.getElementById('tweet-reply-input')
+//     tweetsData.forEach(function (tweet) {
+//         if (reply.value && tweet.uuid === tweetId) {
+//             tweet.replies.unshift({
+//                 handle: `@Scrimba ✅`,
+//                 profilePic: `images/scrimbalogo.png`,
+//                 tweetText: reply.value
+//             })
+//         }
+//     })
+//     render()
+//     reply =''
+// }
 
 function handleRetweetClick(tweetId) {
     const targetTweetObj = tweetsData.filter(function (tweet) {
@@ -52,6 +91,7 @@ function handleLikeClick(tweetId) {
 function handleReplyClick(replyId) {
 
     document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
+
 }
 
 function handleTweetBtnClick() {
@@ -132,6 +172,13 @@ function getFeedHtml() {
                     </div>
             </div>
                 <div class="hidden" id="replies-${tweet.uuid}">
+                    <div class="tweet-reply">
+                        <img src="images/scrimbalogo.png" class="profile-pic-reply">
+                        <div>
+                            <textarea id="reply-input-${tweet.uuid}" placeholder="Reply...."></textarea>
+                            <button id="reply-btn" data-replybtn="${tweet.uuid}"> Tweet </button>
+                        </div>
+                    </div>
                     ${repliesHtml}
                 </div>
         </div>`
